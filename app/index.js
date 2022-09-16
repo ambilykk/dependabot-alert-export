@@ -38,27 +38,30 @@ const query =
         }
       }
     }`
-    getAlerts();
 
-async function getAlerts() {
+async function getAlerts(org, repo) {
     try {
-
-        // inputs defined in action metadata file
-        const org_Name = core.getInput('org_name');
-        const repo_Name = core.getInput('repo_name');
-        console.log(`org name ${org_Name}   repo name ${repo_Name}`);
-        
-        const { context = {} } = github;
-        console.log(`context org name ${context.org}   context repo name ${context.repo}`);
-
-        const alertResult = await octokit.graphql(query, {org_name: org_Name, repo_name: repo_Name} );
-        for (const vulnerability in alertResult.repository.vulnerabilityAlerts.nodes) {
-            console.log(vulnerability.id + "   " + vulnerability.state);
-            console.log(vulnerability.securityAdvisory.description + "   " + vulnerability.securityVulnerability.package.name);
-        }
-
+        return await octokit.graphql(query, { org_name: `${org}`, repo_name: `${repo}` });
     } catch (error) {
         core.setFailed(error.message);
     }
-
 }
+
+
+// inputs defined in action metadata file
+const org_Name = core.getInput('org_name');
+const repo_Name = core.getInput('repo_name');
+console.log(`org name ${org_Name}   repo name ${repo_Name}`);
+
+const context = github.context;
+const repo = context.payload.repository.name;
+console.log(`context org name ${repo} `);
+
+getAlerts(org_Name, repo_Name).then(alertResult => {
+
+    for (const vulnerability in alertResult.repository.vulnerabilityAlerts.nodes) {
+        console.log(vulnerability.id + "   " + vulnerability.state);
+        console.log(vulnerability.securityAdvisory.description + "   " + vulnerability.securityVulnerability.package.name);
+    }
+});
+
