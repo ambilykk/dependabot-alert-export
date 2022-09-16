@@ -51,7 +51,7 @@ async function getAlerts() {
         const { context = {} } = github;
         console.log(`context org name ${context.org}   context repo name ${context.repo}`);
 
-        const alertResult = await octokit.graphql(query, { org: org_Name, repo: repo_Name });
+        const alertResult = await octokit.graphql(query, {org_name: org_Name, repo_name: repo_Name} );
         for (const vulnerability in alertResult.repository.vulnerabilityAlerts.nodes) {
             console.log(vulnerability.id + "   " + vulnerability.state);
             console.log(vulnerability.securityAdvisory.description + "   " + vulnerability.securityVulnerability.package.name);
