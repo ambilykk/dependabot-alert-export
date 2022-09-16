@@ -9,7 +9,7 @@ const query =
     `query ($org_name: String! $repo_name: String!){
       repository(owner: $org_name name: $repo_name) {
         name
-        vulnerabilityAlerts(first: 500) {         
+        vulnerabilityAlerts(first: 50) {         
           totalCount
           nodes {
             id
@@ -58,8 +58,8 @@ const repo = context.payload.repository.name;
 console.log(`context org name ${repo} `);
 
 getAlerts(org_Name, repo_Name).then(alertResult => {
-
-    for (const vulnerability in alertResult.repository.vulnerabilityAlerts.nodes) {
+    const result=alertResult.data.repository.vulnerabilityAlerts;
+    for (const vulnerability in result.nodes) {
         console.log(vulnerability.id + "   " + vulnerability.state);
         console.log(vulnerability.securityAdvisory.description + "   " + vulnerability.securityVulnerability.package.name);
     }
