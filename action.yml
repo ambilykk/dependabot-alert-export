@@ -1,0 +1,15 @@
+name: 'Dependabot Alert Export'
+description: 'Dependabot Alert Export Action for exporting alerts from a repository or organization'
+branding:
+  icon: 'alert-triangle'
+  color: 'orange'
+inputs:
+  org_name: 
+    description: 'Organization name'
+    required: true
+  repo_name:
+    description: 'Repository name'
+    required: true  
+runs:
+  using: 'node16'
+  main: 'app/index.js'
