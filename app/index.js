@@ -51,7 +51,7 @@ try {
    }
 
 
-   const alertResult = await graphql({ query, org: org_Name, repo: repo_Name});
+   const alertResult = graphql({ query, org: org_Name, repo: repo_Name});
    for(const vulnerability in alertResult.repository.vulnerabilityAlerts.nodes){
         console.log(vulnerability.id +"   "+ vulnerability.state);
         console.log(vulnerability.securityAdvisory.description + "   " + vulnerability.securityVulnerability.package.name);
