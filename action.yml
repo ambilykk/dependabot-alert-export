@@ -4,6 +4,9 @@ branding:
   icon: 'alert-triangle'
   color: 'orange'
 inputs:
+  GITHUB_TOKEN:
+    description: 'GitHub token'
+    required: true
   org_name: 
     description: 'Organization name'
     required: true

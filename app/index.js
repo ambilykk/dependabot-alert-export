@@ -1,6 +1,9 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const graphql = require('@octokit/graphql');
+// const graphql = require('@octokit/graphql');
+
+const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
+const octokit = github.getOctokit(GITHUB_TOKEN);
 
 const query =
     `query ($org_name: String! $repo_name: String!){
@@ -44,17 +47,11 @@ async function getAlerts() {
         const org_Name = core.getInput('org_name');
         const repo_Name = core.getInput('repo_name');
         console.log(`org name ${org_Name}   repo name ${repo_Name}`);
-        console.log(`context org name ${github.context.orgName}   context repo name ${github.context.repoName}`);
-        // If the org and repo names are empty, set the current org and repo names
-        if (!org_Name) {
-            org_Name = github.context.orgName;
-        }
-        if (!repo_Name) {
-            repo_Name = github.context.repoName;
-        }
+        
+        const { context = {} } = github;
+        console.log(`context org name ${context.org}   context repo name ${context.repo}`);
 
-
-        const alertResult = await graphql(query, { org: org_Name, repo: repo_Name });
+        const alertResult = await octokit.graphql(query, { org: org_Name, repo: repo_Name });
         for (const vulnerability in alertResult.repository.vulnerabilityAlerts.nodes) {
             console.log(vulnerability.id + "   " + vulnerability.state);
             console.log(vulnerability.securityAdvisory.description + "   " + vulnerability.securityVulnerability.package.name);
