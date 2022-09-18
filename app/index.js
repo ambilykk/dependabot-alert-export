@@ -59,11 +59,11 @@ console.log(`context org name ${repo} `);
 
 getAlerts(org_Name, repo_Name).then(alertResult => {
     console.log(`data ${alertResult}`);
-    const alertResultJsonObj=JSON.parse(JSON.stringify(alertResult));
+    let alertResultJsonObj=JSON.parse(JSON.stringify(alertResult));
+
     console.log(`data ${alertResultJsonObj.data}`);
-    console.log(`data ${alertResultJsonObj.data.repository}`);
-    console.log(`data ${alertResultJsonObj.data.repository.name}`);
-    const result=alertResult.repository.vulnerabilityAlerts;
+    console.log(`reposi ${alertResultJsonObj.repository}`);
+    const result=alertResultJsonObj.repository.vulnerabilityAlerts;
     for (const vulnerability in result.nodes) {
         console.log(`Vulnerability data ${vulnerability.id}  ${vulnerability.state}`);
     }
