@@ -71,7 +71,7 @@ getAlerts(org_Name, repo_Name).then(alertResult => {
     console.log(`length  ${vulnerabilityNodes.length}`);
 
     for (const vulnerability in vulnerabilityNodes) {
-        const vul=JSON.parse(vulnerability);
+        const vul=JSON.parse(JSON.stringify(vulnerability));
         console.log(`Vulnerability data ${vul.id}  ${vul.state}`);
     }
 });
