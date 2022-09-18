@@ -5,7 +5,7 @@ const github = require('@actions/github');
 // libs for csv file creation
 const { dirname } = require("path");
 const { existsSync, appendFileSync } = require("fs");
-const { CSV } = require("csv-string");
+const CSV  = require("csv-string");
 const makeDir = require("make-dir");
 
 const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
