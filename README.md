@@ -51,6 +51,7 @@ steps:
 ## Report
 Vulnerability report in CSV format will be available as part of the build artifacts for download
 
+<img width="792" alt="Screenshot 2022-09-18 at 1 23 26 PM" src="https://user-images.githubusercontent.com/10282550/190891852-13c25b39-3779-4754-a2e5-7f431b2807c4.png">
 
 # License
 
