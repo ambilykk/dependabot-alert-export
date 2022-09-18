@@ -1,2 +1,59 @@
 # dependabot-alert-export
-Export the Dependabot alerts specific to a repo or organization
+Export the Dependabot alerts as CSV file from a repo
+
+This GitHub action helps to export the Dependabot alerts to a CSV file. One can define a workflow to run or triger based on specific event to capture all Dependabot alerts to a CSV file for further analysis. 
+
+
+## Release
+GitHub Marketplace : << Not Yet deployed to Marketplace >>
+
+# How to Use the Action
+
+## PAT Token
+Create a PAT token to get access to the Dependabot alerts. Pass this token as an input to the action - GITHUB_TOKEN
+
+
+## action in workflow
+
+Include the dependabot-alert-export action in your workflow. 
+
+Following is the sample code for integrating this action with your workflow
+
+```
+steps:    
+      - name: checkout main branch
+        uses: actions/checkout@v2
+        
+      - name: Action test
+        uses: techrill88/dependabot-alert-export@v1.0
+        with:        
+          GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
+          org_name: 'techrill88'
+          repo_name: 'ado_mapping'
+          csv_path: data/stats.csv
+          
+      - name: Upload Vulnerability report
+        uses: actions/upload-artifact@v3
+        with:
+           name: vulnerability_report
+           path: data/stats.csv          
+```
+
+## Parameters
+
+| Name                           | Required  | Description                                                                      |
+|--------------------------------|------------|----------------------------------------------------------------------|
+| GITHUB_TOKEN                 | Yes | PAT Token for access    |
+| org_name                       | Yes | GitHub Organization Name                                      |
+| repo_name                   | Yes | GitHub Repository Name     |
+| csv_path                       | Yes | CSV file path                                   |
+
+## Report
+Vulnerability report in CSV format will be available as part of the build artifacts for download
+
+
+# License
+
+The scripts and documentation in this project are released under the [MIT License](https://github.com/actions/download-artifact/blob/main/LICENSE)
+
+
