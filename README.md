@@ -30,13 +30,13 @@ steps:
           GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
           org_name: 'techrill88'
           repo_name: 'ado_mapping'
-          csv_path: data/stats.csv
+          csv_path: data/vulnerability.csv
           
       - name: Upload Vulnerability report
         uses: actions/upload-artifact@v3
         with:
            name: vulnerability_report
-           path: data/stats.csv          
+           path: data/vulnerability.csv          
 ```
 
 ## Parameters
