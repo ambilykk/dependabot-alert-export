@@ -55,7 +55,7 @@ async function getAlerts(org, repo) {
 
 async function writeToCSV(path, vulnerabilityNodes){
     const rows = [];
-    let columns=`Id, State, Created At, Manifest File Name, Vulnerability Version Range, Package Name, GHAS Id, Severity, Summary, Description `;
+    let columns=`Id, State, Created At, Manifest File Name, Vulnerability Version Range, Package Name, GHAS Id, Severity, Summary, Link, Description `;
     let data ="";
 
     if (!existsSync(path)) {
@@ -64,15 +64,15 @@ async function writeToCSV(path, vulnerabilityNodes){
 
     for (let i = 0; i < vulnerabilityNodes.length; i++) {
         const vul = JSON.parse(JSON.stringify(vulnerabilityNodes[i]));
-        data = vul.id+`,`+ vul.state+`,`+vul.createdAt+`,`+vul.vulnerableManifestFilename+`,`;
+        data = vul.id+`, `+ vul.state+`, `+vul.createdAt+`, `+vul.vulnerableManifestFilename+`, `;
 
         //security vulnerability data
         const secVul = JSON.parse(JSON.stringify(vul.securityVulnerability));
-        data+=secVul.vulnerableVersionRange+','+JSON.parse(JSON.stringify(secVul.package)).name+`,`;
+        data+=secVul.vulnerableVersionRange+', '+JSON.parse(JSON.stringify(secVul.package)).name+`, `;
 
         // Security Advisory data
         const secAdv = JSON.parse(JSON.stringify(vul.securityAdvisory));
-        data+= secAdv.ghsaId+`,`+secAdv.severity+`,`+secAdv.summary+`,`+secAdv.permalink+`,`+secAdv.description+`,`;
+        data+= secAdv.ghsaId+`, `+secAdv.severity+`, `+secAdv.summary+`, `+secAdv.permalink+`, `+secAdv.description;
         
         rows.push(CSV.stringify(data));
     }    
