@@ -1,6 +1,12 @@
+// libs for github & graphql
 const core = require('@actions/core');
 const github = require('@actions/github');
-// const graphql = require('@octokit/graphql');
+
+// libs for csv file creation
+const { dirname } = require("path");
+const { existsSync, appendFileSync } = require("fs");
+const { csvStringify } = require("csv-string");
+const makeDir = require("make-dir");
 
 const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
 const octokit = github.getOctokit(GITHUB_TOKEN);
@@ -47,6 +53,33 @@ async function getAlerts(org, repo) {
     }
 }
 
+function writeToCSV(path, vulnerabilityNodes){
+    const rows = [];
+    let columns=`Id, State, Created At, Manifest File Name, Vulnerability Version Range, Package Name, GHAS Id, Severity, Summary, Description `;
+    let data ="";
+
+    if (!existsSync(path)) {
+        rows.push(csvStringify(columns));
+    }
+
+    for (let i = 0; i < vulnerabilityNodes.length; i++) {
+        const vul = JSON.parse(JSON.stringify(vulnerabilityNodes[i]));
+        data = vul.id+`,`+ vul.state+`,`+vul.createdAt+`,`+vul.vulnerableManifestFilename+`,`;
+
+        //security vulnerability data
+        const secVul = JSON.parse(JSON.stringify(vul.securityVulnerability));
+        data+=secVul.vulnerableVersionRange+','+JSON.parse(JSON.stringify(secVul.package)).name+`,`;
+
+        // Security Advisory data
+        const secAdv = JSON.parse(JSON.stringify(vul.securityAdvisory));
+        data+= secAdv.ghsaId+`,`+secAdv.severity+`,`+secAdv.summary+`,`+secAdv.permalink+`,`+secAdv.description+`,`;
+        
+        rows.push(csvStringify(data));
+    }    
+
+    await makeDir(dirname(path));
+    appendFileSync(path, rows.join(""));
+}
 
 // inputs defined in action metadata file
 const org_Name = core.getInput('org_name');
@@ -59,17 +92,14 @@ console.log(`context org name ${repo} `);
 
 getAlerts(org_Name, repo_Name).then(alertResult => {
     console.log(`data ${alertResult}`);
-    let alertResultJsonObj=JSON.parse(JSON.stringify(alertResult));
-    let vulnerabilityData=JSON.parse(JSON.stringify(alertResultJsonObj.repository)).vulnerabilityAlerts;
-    let count=vulnerabilityData.totalCount;
-    let vulnerabilityNodes=JSON.parse(JSON.stringify(vulnerabilityData.nodes));
+    let alertResultJsonObj = JSON.parse(JSON.stringify(alertResult));
+    let vulnerabilityData = JSON.parse(JSON.stringify(alertResultJsonObj.repository)).vulnerabilityAlerts;
+    let count = vulnerabilityData.totalCount;
+    let vulnerabilityNodes = JSON.parse(JSON.stringify(vulnerabilityData.nodes));
 
     console.log(`total count ${count}`);
     console.log(`length  ${vulnerabilityNodes.length}`);
 
-    for (let i=0; i<vulnerabilityNodes.length;i++) {
-        const vul=JSON.parse(JSON.stringify(vulnerabilityNodes[i]));
-        console.log(`Vulnerability data ${vul.id}  ${vul.state}`);
-    }
+    writeToCSV("log/VulnerabilityReport.csv",vulnerabilityNodes );    
 });
 

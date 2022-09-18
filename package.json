@@ -18,7 +18,6 @@
   "homepage": "https://github.com/techrill88/dependabot-alert-export#readme",
   "dependencies": {
     "@actions/core": "^1.9.1",
-    "@actions/github": "^5.0.3",
-    "@octokit/graphql": "^5.0.1"
+    "@actions/github": "^5.0.3"
   }
 }
