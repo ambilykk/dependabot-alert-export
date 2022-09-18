@@ -84,6 +84,7 @@ async function writeToCSV(path, vulnerabilityNodes){
 // inputs defined in action metadata file
 const org_Name = core.getInput('org_name');
 const repo_Name = core.getInput('repo_name');
+const csv_path=core.getInput('csv_path');
 console.log(`org name ${org_Name}   repo name ${repo_Name}`);
 
 const context = github.context;
@@ -100,6 +101,6 @@ getAlerts(org_Name, repo_Name).then(alertResult => {
     console.log(`total count ${count}`);
     console.log(`length  ${vulnerabilityNodes.length}`);
 
-    writeToCSV("log/VulnerabilityReport.csv",vulnerabilityNodes );    
+    writeToCSV(csv_path,vulnerabilityNodes );    
 });
 

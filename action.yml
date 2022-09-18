@@ -13,6 +13,9 @@ inputs:
   repo_name:
     description: 'Repository name'
     required: true  
+  csv_path:
+    description: 'CSV File path'
+    required: true
 runs:
   using: 'node16'
   main: 'app/index.js'
