@@ -59,7 +59,7 @@ console.log(`context org name ${repo} `);
 
 getAlerts(org_Name, repo_Name).then(alertResult => {
     console.log(`data ${alertResult}`);
-    const alertResultJsonObj=JSON.parse(alertResult);
+    const alertResultJsonObj=JSON.parse(JSON.stringify(alertResult));
     console.log(`data ${alertResultJsonObj.data}`);
     console.log(`data ${alertResultJsonObj.data.repository}`);
     console.log(`data ${alertResultJsonObj.data.repository.name}`);
