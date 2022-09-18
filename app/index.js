@@ -60,13 +60,17 @@ console.log(`context org name ${repo} `);
 getAlerts(org_Name, repo_Name).then(alertResult => {
     console.log(`data ${alertResult}`);
     let alertResultJsonObj=JSON.parse(JSON.stringify(alertResult));
-    console.log(`reposi ${alertResultJsonObj.repository}`);
-    console.log(`reposi ${JSON.stringify(alertResultJsonObj.repository)}`);
     
     console.log(`test1 ${JSON.parse(JSON.stringify(alertResultJsonObj.repository)).name}`);
 
     let vulnerabilityData=JSON.parse(JSON.stringify(alertResultJsonObj.repository)).vulnerabilityAlerts;
-    for (const vulnerability in vulnerabilityData.nodes) {
+    let count=vulnerabilityData.totalCount;
+    let vulnerabilityNodes=JSON.parse(JSON.stringify(vulnerabilityData.nodes));
+
+    console.log(`total count ${count}`);
+    console.log(`length  ${vulnerabilityNodes.length}`);
+
+    for (const vulnerability in vulnerabilityNodes) {
         console.log(`Vulnerability data ${vulnerability.id}  ${vulnerability.state}`);
     }
 });
