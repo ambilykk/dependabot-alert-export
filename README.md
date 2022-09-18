@@ -48,6 +48,20 @@ steps:
 | repo_name                   | Yes | GitHub Repository Name     |
 | csv_path                       | Yes | CSV file path                                   |
 
+## Exported Fields
+Following fields are included in the Vulnerability Report
+- Vulnerability Id
+- State
+- Created At
+- Manifest File Name
+- Vulnerability Version Range
+- Package Name
+- GHAS Id
+- Severity
+- Summary
+- Link
+- Description
+
 ## Report
 Vulnerability report in CSV format will be available as part of the build artifacts for download
 
