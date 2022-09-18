@@ -5,7 +5,7 @@ const github = require('@actions/github');
 // libs for csv file creation
 const { dirname } = require("path");
 const { existsSync, appendFileSync } = require("fs");
-const { csvStringify } = require("csv-string");
+const { CSV } = require("csv-string");
 const makeDir = require("make-dir");
 
 const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
@@ -59,7 +59,7 @@ async function writeToCSV(path, vulnerabilityNodes){
     let data ="";
 
     if (!existsSync(path)) {
-        rows.push(csvStringify(columns));
+        rows.push(CSV.stringify(columns));
     }
 
     for (let i = 0; i < vulnerabilityNodes.length; i++) {
@@ -74,7 +74,7 @@ async function writeToCSV(path, vulnerabilityNodes){
         const secAdv = JSON.parse(JSON.stringify(vul.securityAdvisory));
         data+= secAdv.ghsaId+`,`+secAdv.severity+`,`+secAdv.summary+`,`+secAdv.permalink+`,`+secAdv.description+`,`;
         
-        rows.push(csvStringify(data));
+        rows.push(CSV.stringify(data));
     }    
 
     await makeDir(dirname(path));
