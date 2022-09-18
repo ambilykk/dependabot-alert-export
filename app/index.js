@@ -58,7 +58,7 @@ const repo = context.payload.repository.name;
 console.log(`context org name ${repo} `);
 
 getAlerts(org_Name, repo_Name).then(alertResult => {
-    console.log(`data ${alertResult.repository.name}`)
+    console.log(`data ${alertResult}`)
     const result=alertResult.repository.vulnerabilityAlerts;
     for (const vulnerability in result.nodes) {
         console.log(`Vulnerability data ${vulnerability.id}  ${vulnerability.state}`);
