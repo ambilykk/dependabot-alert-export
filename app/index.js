@@ -63,10 +63,10 @@ getAlerts(org_Name, repo_Name).then(alertResult => {
     console.log(`reposi ${alertResultJsonObj.repository}`);
     console.log(`reposi ${JSON.stringify(alertResultJsonObj.repository)}`);
     
-    console.log(`test1 ${JSON.parse(alertResultJsonObj.repository).name}`);
+    console.log(`test1 ${JSON.parse(JSON.stringify(alertResultJsonObj.repository)).name}`);
 
-    const result=alertResultJsonObj.repository.vulnerabilityAlerts;
-    for (const vulnerability in result.nodes) {
+    let vulnerabilityData=JSON.parse(JSON.stringify(alertResultJsonObj.repository)).vulnerabilityAlerts;
+    for (const vulnerability in vulnerabilityData.nodes) {
         console.log(`Vulnerability data ${vulnerability.id}  ${vulnerability.state}`);
     }
 });
