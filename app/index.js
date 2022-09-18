@@ -53,7 +53,7 @@ async function getAlerts(org, repo) {
     }
 }
 
-function writeToCSV(path, vulnerabilityNodes){
+async function writeToCSV(path, vulnerabilityNodes){
     const rows = [];
     let columns=`Id, State, Created At, Manifest File Name, Vulnerability Version Range, Package Name, GHAS Id, Severity, Summary, Description `;
     let data ="";
