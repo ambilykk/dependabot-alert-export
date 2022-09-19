@@ -173,15 +173,17 @@ async function run(org_Name, repo_Name, csv_path) {
       // let vulnerabilityNodes = JSON.parse(JSON.stringify(alertResult.repository.vulnerabilityAlerts.nodes));
       let vulnerabilityNodes = alertResult.repository.vulnerabilityAlerts.nodes;
  // append to reportsCSV
-      reportsCSV = reportsCSV.concat(json2csvParserReports.parse(vulnerabilityNodes));
+      newReportsCSV = json2csvParserReports.parse(vulnerabilityNodes)
+      console.log("newReportsCSV: " + newReportsCSV);
+      reportsCSV = reportsCSV.concat(newReportsCSV);
 
       // pagination to get next page data
       let pageInfo = alertResult.repository.vulnerabilityAlerts.pageInfo;
-      hasPage = pageInfo.hasNextPage;
-      if (hasPage) {
+      hasNextPage = pageInfo.hasNextPage;
+      if (hasNextPage) {
         pagination = pageInfo.endCursor
       }
-      console.log(`hasPage  ${hasPage}`);
+      console.log(`hasNextPage  ${hasNextPage}`);
       console.log(`Pagination cursor ${pagination}`);
 
     });
