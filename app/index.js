@@ -54,7 +54,7 @@ const query =
 // graphql query execution
 async function getAlerts(org, repo, pagination) {
     try {
-        return await octokit.graphql(query, { org_name: `${org}`, repo_name: `${repo}`, pagination: `${pagination}` });
+        return await octokit.graphql(query, { org_name: `${org}`, repo_name: `${repo}`, pagination: pagination? `${pagination}`:null });
     } catch (error) {
         core.setFailed(error.message);
     }
