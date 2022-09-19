@@ -28,4 +28,4 @@ jobs:
 
   # Runs a single command using the runners shell
       - name: node app/myParser.js
-        run: node app/myParser.js
+        run: npm install && node app/myParser.js
