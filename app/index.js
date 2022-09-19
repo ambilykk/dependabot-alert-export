@@ -165,18 +165,18 @@ async function run(org_Name, repo_Name, csv_path) {
     await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
 
       // iterative parsing of the graphql query result
-      let alertResultJsonObj = JSON.parse(JSON.stringify(alertResult));
-      let vulnerabilityData = JSON.parse(JSON.stringify(alertResultJsonObj.repository)).vulnerabilityAlerts;
-      let count = vulnerabilityData.totalCount;
+      // let alertResultJsonObj = JSON.parse(JSON.stringify(alertResult));
+      // let vulnerabilityData = JSON.parse(JSON.stringify(alertResultJsonObj.repository)).vulnerabilityAlerts;
+      // let count = vulnerabilityData.totalCount;
 
- //     let vulnerabilityNodes = JSON.parse(JSON.stringify(vulnerabilityData.nodes));
- //     let vulnerabilityNodes = JSON.parse(JSON.stringify(alertResult.repository.vulnerabilityAlerts.nodes));
+      // let vulnerabilityNodes = JSON.parse(JSON.stringify(vulnerabilityData.nodes));
+      // let vulnerabilityNodes = JSON.parse(JSON.stringify(alertResult.repository.vulnerabilityAlerts.nodes));
       let vulnerabilityNodes = alertResult.repository.vulnerabilityAlerts.nodes;
  // append to reportsCSV
       reportsCSV = reportsCSV.concat(json2csvParserReports.parse(vulnerabilityNodes));
 
       // pagination to get next page data
-      let pageInfo = JSON.parse(JSON.stringify(vulnerabilityData.pageInfo));
+      let pageInfo = alertResult.repository.vulnerabilityAlerts.pageInfo;
       hasPage = pageInfo.hasNextPage;
       if (hasPage) {
         pagination = pageInfo.endCursor
