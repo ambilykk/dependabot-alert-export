@@ -125,7 +125,7 @@ getAlerts(org_Name, repo_Name,pagination).then(alertResult => {
     // pagination to get next page data
     let pageInfo=JSON.parse(JSON.stringify(vulnerabilityData.pageInfo));
     hasPage=pageInfo.hasNextPage;
-    if (hasNextPage) {
+    if (hasPage) {
         pagination = pageInfo.endCursor
       }
 });
