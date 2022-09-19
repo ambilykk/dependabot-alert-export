@@ -159,7 +159,7 @@ async function run(org_Name, repo_Name, csv_path) {
 //  const reportsCSV = json2csvParserReports.parse(myReports);
 
   let pagination = null;
-  let hasPage = false;
+  let hasNextPage = false;
   do {
     // invoke the graphql query execution
     await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
