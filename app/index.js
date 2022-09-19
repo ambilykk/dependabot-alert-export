@@ -1,6 +1,7 @@
 // libs for github & graphql
 const core = require('@actions/core');
 const github = require('@actions/github');
+const { Parser } = require('json2csv');
 
 // libs for csv file creation
 const { dirname } = require("path");
@@ -12,12 +13,59 @@ const makeDir = require("make-dir");
 const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
 const octokit = github.getOctokit(GITHUB_TOKEN);
 
+// Our CSV output fields
+const fields = [{
+  label: 'Id',
+  value: 'id'
+},
+{
+  label: 'State',
+  value: 'state'
+},
+{
+  label: 'Created At',
+  value: 'createdAt'
+},
+{
+  label: 'Manifest File Name',
+  value: 'vulnerableManifestFilename'
+},
+{
+  label: 'Vulnerability Version Range',
+  value: 'securityVulnerability.vulnerableVersionRange'
+},
+{
+  label: 'Package Name',
+  value: 'securityVulnerability.package.name'
+},
+{
+  label: 'GHAS Id',
+  value: 'securityAdvisory.ghsaId'
+},
+{
+  label: 'Severity',
+  value: 'securityAdvisory.severity'
+},
+{
+  label: 'Summary',
+  value: 'securityAdvisory.summary'
+},
+{
+  label: 'Link',
+  value: 'securityAdvisory.permalink'
+},
+{
+  label: 'Description',
+  value: 'securityAdvisory.description'
+}
+];
+
 // Graphql query for vulnerability data
 const query =
   `query ($org_name: String! $repo_name: String! $pagination: String){
       repository(owner: $org_name name: $repo_name) {
         name
-        vulnerabilityAlerts(first: 50 after: $pagination) {     
+        vulnerabilityAlerts(first: 1 after: $pagination) {     
           pageInfo {
               hasNextPage
               endCursor
@@ -106,6 +154,10 @@ async function writeToCSV(path, vulnerabilityNodes) {
 
 // Extract vulnerability alerts with a pagination of 50 alerts per page
 async function run(org_Name, repo_Name, csv_path) {
+  const json2csvParserReports = new Parser({ fields });
+  let reportsCSV = "";
+//  const reportsCSV = json2csvParserReports.parse(myReports);
+
   let pagination = null;
   let hasPage = false;
   do {
@@ -118,8 +170,8 @@ async function run(org_Name, repo_Name, csv_path) {
       let count = vulnerabilityData.totalCount;
 
       let vulnerabilityNodes = JSON.parse(JSON.stringify(vulnerabilityData.nodes));
-      // write to the csv file
-      writeToCSV(csv_path, vulnerabilityNodes);
+      // append to reportsCSV
+      reportsCSV.concat(json2csvParserReports.parse(vulnerabilityNodes);
 
       // pagination to get next page data
       let pageInfo = JSON.parse(JSON.stringify(vulnerabilityData.pageInfo));
@@ -132,6 +184,9 @@ async function run(org_Name, repo_Name, csv_path) {
 
     });
   } while (hasPage);
+//  writeToCSV(csv_path, vulnerabilityNodes);
+console.log(reportsCSV);
+
 }
 
 // inputs defined in action metadata file
