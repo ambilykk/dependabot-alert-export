@@ -35,7 +35,7 @@ jobs:
         with:        
           GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
           org_name: 'octodemo'
-          repo_name: 'tonycch_secrets_private'
+          repo_name: 'Fabrikam-Dependabot1'
           csv_path: data/vulnerability.csv
           
       - name: Upload Vulnerability report
