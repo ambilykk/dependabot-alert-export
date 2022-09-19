@@ -31,7 +31,7 @@ jobs:
         run: npm install && node app/myParser.js
   
       - name: Export Dependabot alerts
-        uses: techrill88/dependabot-alert-export@v1.0
+        uses: affrae/dependabot-alert-export@latest
         with:        
           GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
           org_name: 'octodemo'
