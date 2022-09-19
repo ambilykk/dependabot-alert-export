@@ -165,15 +165,16 @@ async function run(org_Name, repo_Name, csv_path) {
     await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
 
       // iterative parsing of the graphql query result
+      console.log("alertResult:\n" + JSON.stringify(alertResult));
       let alertResultJsonObj = JSON.parse(JSON.stringify(alertResult));
-      console.log("alertResultJsonObj:\n" + alertResultJsonObj)
+      console.log("alertResultJsonObj:\n" + JSON.stringify(alertResultJsonObj));
       let vulnerabilityData = JSON.parse(JSON.stringify(alertResultJsonObj.repository)).vulnerabilityAlerts;
-      console.log("vulnerabilityData:\n" + vulnerabilityData)
+      console.log("vulnerabilityData:\n" + vJSON.stringify(ulnerabilityData));
       let count = vulnerabilityData.totalCount;
 
       let vulnerabilityNodes = JSON.parse(JSON.stringify(vulnerabilityData.nodes));
       // append to reportsCSV
-      console.log("vulnerabilityNodes:\n" +vulnerabilityNodes)
+      console.log("vulnerabilityNodes:\n" + JSON.stringify(vulnerabilityNodes));
       reportsCSV = reportsCSV.concat(json2csvParserReports.parse(vulnerabilityNodes));
 
       // pagination to get next page data
