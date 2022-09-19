@@ -27,5 +27,5 @@ jobs:
         run: echo Hello, world!
 
   # Runs a single command using the runners shell
-      - name: Run a one-line script
+      - name: node app/myParser.js
         run: node app/myParser.js
