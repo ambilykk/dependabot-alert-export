@@ -185,7 +185,7 @@ async function run(org_Name, repo_Name, csv_path) {
     });
   } while (hasPage);
 //  writeToCSV(csv_path, vulnerabilityNodes);
-console.log("reportsCSV:" + reportsCSV);
+console.log("reportsCSV:\n" + reportsCSV);
 }
 
 // inputs defined in action metadata file
