@@ -174,7 +174,7 @@ async function run(org_Name, repo_Name, csv_path) {
       let vulnerabilityNodes = alertResult.repository.vulnerabilityAlerts.nodes;
  // append to reportsCSV
       newReportsCSV = json2csvParserReports.parse(vulnerabilityNodes)
-      console.log("newReportsCSV: " + newReportsCSV);
+      console.log("newReportsCSV: \n" + newReportsCSV);
       reportsCSV = reportsCSV.concat(newReportsCSV);
 
       // pagination to get next page data
@@ -187,7 +187,7 @@ async function run(org_Name, repo_Name, csv_path) {
       console.log(`Pagination cursor ${pagination}`);
 
     });
-  } while (hasPage);
+  } while (hasNextPage);
 //  writeToCSV(csv_path, vulnerabilityNodes);
 console.log("reportsCSV:\n" + reportsCSV);
 }
