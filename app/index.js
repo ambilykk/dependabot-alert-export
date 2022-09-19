@@ -14,10 +14,14 @@ const octokit = github.getOctokit(GITHUB_TOKEN);
 
 // Graphql query for vulnerability data
 const query =
-    `query ($org_name: String! $repo_name: String!){
+    `query ($org_name: String! $repo_name: String! $pagination:String){
       repository(owner: $org_name name: $repo_name) {
         name
-        vulnerabilityAlerts(first: 50) {         
+        vulnerabilityAlerts(first: 100 after: $pagination) {     
+            pageInfo {
+                hasNextPage
+                endCursor
+              }    
           totalCount
           nodes {
             id
@@ -48,9 +52,9 @@ const query =
     }`
 
 // graphql query execution
-async function getAlerts(org, repo) {
+async function getAlerts(org, repo, pagination) {
     try {
-        return await octokit.graphql(query, { org_name: `${org}`, repo_name: `${repo}` });
+        return await octokit.graphql(query, { org_name: `${org}`, repo_name: `${repo}`, pagination: `${pagination}` });
     } catch (error) {
         core.setFailed(error.message);
     }
@@ -103,19 +107,27 @@ const csv_path = core.getInput('csv_path');
 
 console.log(`org name ${org_Name}   repo name ${repo_Name}`);
 
+let pagination = null;
+let hasPage =false;
+do{
 // invoke the graphql query execution
-getAlerts(org_Name, repo_Name).then(alertResult => {
+getAlerts(org_Name, repo_Name,pagination).then(alertResult => {
     
     // iterative parsing of the graphql query result
     let alertResultJsonObj = JSON.parse(JSON.stringify(alertResult));
     let vulnerabilityData = JSON.parse(JSON.stringify(alertResultJsonObj.repository)).vulnerabilityAlerts;
     let count = vulnerabilityData.totalCount;
+
     let vulnerabilityNodes = JSON.parse(JSON.stringify(vulnerabilityData.nodes));
-
-    console.log(`total count ${count}`);
-    console.log(`length  ${vulnerabilityNodes.length}`);
-
     // write to the csv file
     writeToCSV(csv_path, vulnerabilityNodes);
+
+    // pagination to get next page data
+    let pageInfo=JSON.parse(JSON.stringify(vulnerabilityData.pageInfo));
+    hasPage=pageInfo.hasNextPage;
+    if (hasNextPage) {
+        pagination = pageInfo.endCursor
+      }
 });
+}while(hasPage);
 
