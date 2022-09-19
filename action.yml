@@ -1,8 +1,8 @@
 name: 'Dependabot Alert Export'
 description: 'Dependabot Alert Export Action for exporting alerts from a repository or organization'
 branding:
-  icon: 'alert-triangle'
-  color: 'orange'
+  icon: 'download'
+  color: 'purple'
 inputs:
   GITHUB_TOKEN:
     description: 'GitHub token'
