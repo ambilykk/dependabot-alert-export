@@ -20,10 +20,7 @@ Include the dependabot-alert-export action in your workflow.
 Following is the sample code for integrating this action with your workflow
 
 ```
-steps:    
-      - name: checkout main branch
-        uses: actions/checkout@v2
-        
+steps:               
       - name: Action test
         uses: techrill88/dependabot-alert-export@v1.0
         with:        
