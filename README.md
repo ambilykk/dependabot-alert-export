@@ -25,8 +25,8 @@ steps:
         uses: techrill88/dependabot-alert-export@v1.0
         with:        
           GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
-          org_name: 'techrill88'
-          repo_name: 'ado_mapping'
+          org_name: 'ORG_NAME'
+          repo_name: 'REPO_NAME'
           csv_path: data/vulnerability.csv
           
       - name: Upload Vulnerability report
