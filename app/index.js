@@ -14,14 +14,14 @@ const octokit = github.getOctokit(GITHUB_TOKEN);
 
 // Graphql query for vulnerability data
 const query =
-    `query ($org_name: String! $repo_name: String! $pagination:String){
+  `query ($org_name: String! $repo_name: String! $pagination: String){
       repository(owner: $org_name name: $repo_name) {
         name
         vulnerabilityAlerts(first: 50 after: $pagination) {     
-            pageInfo {
-                hasNextPage
-                endCursor
-              }    
+          pageInfo {
+              hasNextPage
+              endCursor
+          }    
           totalCount
           nodes {
             id
@@ -53,51 +53,51 @@ const query =
 
 // graphql query execution
 async function getAlerts(org, repo, pagination) {
-    try {
-        return await octokit.graphql(query, { org_name: `${org}`, repo_name: `${repo}`, pagination: pagination? `${pagination}`:null });
-    } catch (error) {
-        core.setFailed(error.message);
-    }
+  try {
+    return await octokit.graphql(query, { org_name: `${org}`, repo_name: `${repo}`, pagination: (pagination? `${pagination}`: null) });
+  } catch (error) {
+    core.setFailed(error.message);
+  }
 }
 
 // Write the Vulnerability report to csv file
 async function writeToCSV(path, vulnerabilityNodes) {
-    const rows = [];
+  const rows = [];
 
-    // define the report columns
-    let columns = `Id, State, Created At, Manifest File Name, Vulnerability Version Range, Package Name, GHAS Id, Severity, Summary, Link, Description `;
-    let data = "";
+  // define the report columns
+  let columns = `Id, State, Created At, Manifest File Name, Vulnerability Version Range, Package Name, GHAS Id, Severity, Summary, Link, Description `;
+  let data = "";
 
-    // If file not exists, create the column headings
-    if (!existsSync(path)) {
-        rows.push(CSV.stringify(columns));
+  // If file not exists, create the column headings
+  if (!existsSync(path)) {
+    rows.push(CSV.stringify(columns));
+  }
+
+  try {
+
+    // loop through the vulnerability data for form the csv file rows
+    for (let i = 0; i < vulnerabilityNodes.length; i++) {
+      const vul = JSON.parse(JSON.stringify(vulnerabilityNodes[i]));
+      data = vul.id + `, ` + vul.state + `, ` + vul.createdAt + `, ` + vul.vulnerableManifestFilename + `, `;
+
+      //security vulnerability data
+      const secVul = JSON.parse(JSON.stringify(vul.securityVulnerability));
+      data += secVul.vulnerableVersionRange + ', ' + JSON.parse(JSON.stringify(secVul.package)).name + `, `;
+
+      // Security Advisory data
+      const secAdv = JSON.parse(JSON.stringify(vul.securityAdvisory));
+      data += secAdv.ghsaId + `, ` + secAdv.severity + `, ` + secAdv.summary + `, ` + secAdv.permalink + `, ` + secAdv.description;
+
+      rows.push(CSV.stringify(data));
     }
 
-    try {
-
-        // loop through the vulnerability data for form the csv file rows
-        for (let i = 0; i < vulnerabilityNodes.length; i++) {
-            const vul = JSON.parse(JSON.stringify(vulnerabilityNodes[i]));
-            data = vul.id + `, ` + vul.state + `, ` + vul.createdAt + `, ` + vul.vulnerableManifestFilename + `, `;
-
-            //security vulnerability data
-            const secVul = JSON.parse(JSON.stringify(vul.securityVulnerability));
-            data += secVul.vulnerableVersionRange + ', ' + JSON.parse(JSON.stringify(secVul.package)).name + `, `;
-
-            // Security Advisory data
-            const secAdv = JSON.parse(JSON.stringify(vul.securityAdvisory));
-            data += secAdv.ghsaId + `, ` + secAdv.severity + `, ` + secAdv.summary + `, ` + secAdv.permalink + `, ` + secAdv.description;
-
-            rows.push(CSV.stringify(data));
-        }
-
-        // create the path & file
-        await makeDir(dirname(path));
-        // write to the file
-        appendFileSync(path, rows.join(""));
-    } catch (error) {
-        core.setFailed(error.message);
-    }
+    // create the path & file
+    await makeDir(dirname(path));
+    // write to the file
+    appendFileSync(path, rows.join(""));
+  } catch (error) {
+    core.setFailed(error.message);
+  }
 }
 
 // inputs defined in action metadata file
@@ -108,11 +108,11 @@ const csv_path = core.getInput('csv_path');
 console.log(`org name ${org_Name}   repo name ${repo_Name}`);
 
 let pagination = null;
-let hasPage =false;
-do{
-// invoke the graphql query execution
-getAlerts(org_Name, repo_Name,pagination).then(alertResult => {
-    
+let hasPage = false;
+do {
+  // invoke the graphql query execution
+  getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
+
     // iterative parsing of the graphql query result
     let alertResultJsonObj = JSON.parse(JSON.stringify(alertResult));
     let vulnerabilityData = JSON.parse(JSON.stringify(alertResultJsonObj.repository)).vulnerabilityAlerts;
@@ -123,11 +123,11 @@ getAlerts(org_Name, repo_Name,pagination).then(alertResult => {
     writeToCSV(csv_path, vulnerabilityNodes);
 
     // pagination to get next page data
-    let pageInfo=JSON.parse(JSON.stringify(vulnerabilityData.pageInfo));
-    hasPage=pageInfo.hasNextPage;
+    let pageInfo = JSON.parse(JSON.stringify(vulnerabilityData.pageInfo));
+    hasPage = pageInfo.hasNextPage;
     if (hasPage) {
-        pagination = pageInfo.endCursor
-      }
-});
-}while(hasPage);
+      pagination = pageInfo.endCursor
+    }
+  });
+} while (hasPage);
 
