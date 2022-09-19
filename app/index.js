@@ -54,11 +54,11 @@ const query =
 // graphql query execution
 async function getAlerts(org, repo, pagination) {
   try {
-    console.log(pagination? `${pagination}`: null);
+    console.log(pagination ? `${pagination}` : null);
     console.log(`pagination ${pagination}`);
     console.log(pagination);
 
-    return await octokit.graphql(query, { org_name: `${org}`, repo_name: `${repo}`, pagination: (pagination? `${pagination}`: null) });
+    return await octokit.graphql(query, { org_name: `${org}`, repo_name: `${repo}`, pagination: (pagination ? `${pagination}` : null) });
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -104,6 +104,36 @@ async function writeToCSV(path, vulnerabilityNodes) {
   }
 }
 
+// Extract vulnerability alerts with a pagination of 50 alerts per page
+async function run(org_Name, repo_Name, csv_path) {
+  let pagination = null;
+  let hasPage = false;
+  do {
+    // invoke the graphql query execution
+    await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
+
+      // iterative parsing of the graphql query result
+      let alertResultJsonObj = JSON.parse(JSON.stringify(alertResult));
+      let vulnerabilityData = JSON.parse(JSON.stringify(alertResultJsonObj.repository)).vulnerabilityAlerts;
+      let count = vulnerabilityData.totalCount;
+
+      let vulnerabilityNodes = JSON.parse(JSON.stringify(vulnerabilityData.nodes));
+      // write to the csv file
+      writeToCSV(csv_path, vulnerabilityNodes);
+
+      // pagination to get next page data
+      let pageInfo = JSON.parse(JSON.stringify(vulnerabilityData.pageInfo));
+      hasPage = pageInfo.hasNextPage;
+      if (hasPage) {
+        pagination = pageInfo.endCursor
+      }
+      console.log(`hasPage  ${hasPage}`);
+      console.log(`Pagination cursor ${pagination}`);
+
+    });
+  } while (hasPage);
+}
+
 // inputs defined in action metadata file
 const org_Name = core.getInput('org_name');
 const repo_Name = core.getInput('repo_name');
@@ -111,30 +141,5 @@ const csv_path = core.getInput('csv_path');
 
 console.log(`org name ${org_Name}   repo name ${repo_Name}`);
 
-let pagination = null;
-let hasPage = false;
-do {
-  // invoke the graphql query execution
-  await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
-
-    // iterative parsing of the graphql query result
-    let alertResultJsonObj = JSON.parse(JSON.stringify(alertResult));
-    let vulnerabilityData = JSON.parse(JSON.stringify(alertResultJsonObj.repository)).vulnerabilityAlerts;
-    let count = vulnerabilityData.totalCount;
-
-    let vulnerabilityNodes = JSON.parse(JSON.stringify(vulnerabilityData.nodes));
-    // write to the csv file
-    writeToCSV(csv_path, vulnerabilityNodes);
-
-    // pagination to get next page data
-    let pageInfo = JSON.parse(JSON.stringify(vulnerabilityData.pageInfo));    
-    hasPage = pageInfo.hasNextPage;
-    if (hasPage) {
-      pagination = pageInfo.endCursor
-    }
-    console.log(`hasPage  ${hasPage}`);
-    console.log(`Pagination cursor ${pagination}`);
-    
-  });
-} while (hasPage);
-
+// run the action code
+run(org_Name, repo_Name, csv_path);
