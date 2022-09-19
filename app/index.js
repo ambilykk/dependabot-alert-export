@@ -169,7 +169,7 @@ async function run(org_Name, repo_Name, csv_path) {
       let alertResultJsonObj = JSON.parse(JSON.stringify(alertResult));
       console.log("alertResultJsonObj:\n" + JSON.stringify(alertResultJsonObj));
       let vulnerabilityData = JSON.parse(JSON.stringify(alertResultJsonObj.repository)).vulnerabilityAlerts;
-      console.log("vulnerabilityData:\n" + vJSON.stringify(ulnerabilityData));
+      console.log("vulnerabilityData:\n" + JSON.stringify(ulnerabilityData));
       let count = vulnerabilityData.totalCount;
 
       let vulnerabilityNodes = JSON.parse(JSON.stringify(vulnerabilityData.nodes));
