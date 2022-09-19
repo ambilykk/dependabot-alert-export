@@ -115,7 +115,7 @@ let pagination = null;
 let hasPage = false;
 do {
   // invoke the graphql query execution
-  getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
+  await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
 
     // iterative parsing of the graphql query result
     let alertResultJsonObj = JSON.parse(JSON.stringify(alertResult));
@@ -127,9 +127,7 @@ do {
     writeToCSV(csv_path, vulnerabilityNodes);
 
     // pagination to get next page data
-    let pageInfo = JSON.parse(JSON.stringify(vulnerabilityData.pageInfo));
-    console.log(`pageInfo ${JSON.stringify(pageInfo)}`);
-    
+    let pageInfo = JSON.parse(JSON.stringify(vulnerabilityData.pageInfo));    
     hasPage = pageInfo.hasNextPage;
     if (hasPage) {
       pagination = pageInfo.endCursor
