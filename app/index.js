@@ -57,7 +57,7 @@ async function getAlerts(org, repo, pagination) {
     console.log(pagination? `${pagination}`: null);
     console.log(`pagination ${pagination}`);
     console.log(pagination);
-    
+
     return await octokit.graphql(query, { org_name: `${org}`, repo_name: `${repo}`, pagination: (pagination? `${pagination}`: null) });
   } catch (error) {
     core.setFailed(error.message);
@@ -128,10 +128,15 @@ do {
 
     // pagination to get next page data
     let pageInfo = JSON.parse(JSON.stringify(vulnerabilityData.pageInfo));
+    console.log(`pageInfo ${JSON.stringify(pageInfo)}`);
+    
     hasPage = pageInfo.hasNextPage;
     if (hasPage) {
       pagination = pageInfo.endCursor
     }
+    console.log(`hasPage  ${hasPage}`);
+    console.log(`Pagination cursor ${pagination}`);
+    
   });
 } while (hasPage);
 
