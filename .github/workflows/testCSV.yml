@@ -29,3 +29,17 @@ jobs:
   # Runs a single command using the runners shell
       - name: node app/myParser.js
         run: npm install && node app/myParser.js
+  
+      - name: Export Dependabot alerts
+        uses: techrill88/dependabot-alert-export@v1.0
+        with:        
+          GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
+          org_name: 'octodemo'
+          repo_name: 'tonycch_secrets_private'
+          csv_path: data/vulnerability.csv
+          
+      - name: Upload Vulnerability report
+        uses: actions/upload-artifact@v3
+        with:
+           name: vulnerability_report
+           path: data/vulnerability.csv        
