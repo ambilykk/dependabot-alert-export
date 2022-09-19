@@ -65,7 +65,7 @@ const query =
   `query ($org_name: String! $repo_name: String! $pagination: String){
       repository(owner: $org_name name: $repo_name) {
         name
-        vulnerabilityAlerts(first: 1 after: $pagination) {     
+        vulnerabilityAlerts(first: 50 after: $pagination) {     
           pageInfo {
               hasNextPage
               endCursor
