@@ -171,6 +171,7 @@ async function run(org_Name, repo_Name, csv_path) {
 
       let vulnerabilityNodes = JSON.parse(JSON.stringify(vulnerabilityData.nodes));
       // append to reportsCSV
+      console.log(vulnerabilityNodes)
       reportsCSV = reportsCSV.concat(json2csvParserReports.parse(vulnerabilityNodes));
 
       // pagination to get next page data
