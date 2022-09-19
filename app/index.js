@@ -65,7 +65,7 @@ const query =
   `query ($org_name: String! $repo_name: String! $pagination: String){
       repository(owner: $org_name name: $repo_name) {
         name
-        vulnerabilityAlerts(first: 50 after: $pagination) {     
+        vulnerabilityAlerts(first: 10 after: $pagination) {     
           pageInfo {
               hasNextPage
               endCursor
@@ -165,16 +165,12 @@ async function run(org_Name, repo_Name, csv_path) {
     await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
 
       // iterative parsing of the graphql query result
-      console.log("alertResult:\n" + JSON.stringify(alertResult));
       let alertResultJsonObj = JSON.parse(JSON.stringify(alertResult));
-      console.log("alertResultJsonObj:\n" + JSON.stringify(alertResultJsonObj));
       let vulnerabilityData = JSON.parse(JSON.stringify(alertResultJsonObj.repository)).vulnerabilityAlerts;
-      console.log("vulnerabilityData:\n" + JSON.stringify(vulnerabilityData));
       let count = vulnerabilityData.totalCount;
 
       let vulnerabilityNodes = JSON.parse(JSON.stringify(vulnerabilityData.nodes));
       // append to reportsCSV
-      console.log("vulnerabilityNodes:\n" + JSON.stringify(vulnerabilityNodes));
       reportsCSV = reportsCSV.concat(json2csvParserReports.parse(vulnerabilityNodes));
 
       // pagination to get next page data
