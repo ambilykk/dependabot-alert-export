@@ -1,5 +1,5 @@
 name: 'Dependabot Alert Export'
-description: 'Dependabot Alert Export Action for exporting alerts from a repository or organization'
+description: 'Export the Dependabot alerts to CSV'
 branding:
   icon: 'download'
   color: 'purple'
