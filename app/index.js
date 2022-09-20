@@ -105,7 +105,7 @@ const fields = [{
 // graphql query execution
 async function getAlerts(org, repo, pagination) {
   try {
-    console.log(`getAlerts(): ${pagination ? pagination: null}` );
+    console.log(`getAlerts(): pagination: ${pagination ? pagination: null}` );
 
     return await octokit.graphql(query, { org_name: `${org}`, repo_name: `${repo}`, pagination: (pagination ? `${pagination}` : null) });
   } catch (error) {
@@ -139,9 +139,9 @@ async function run(org_Name, repo_Name, csv_path) {
           pagination = pageInfo.endCursor;
           addTitleRow = false;
         }
-        console.log(`hasNextPage:  ${hasNextPage}`);
-        console.log(`Pagination cursor: ${pagination}`);
-        console.log(`addTitleRow: ${addTitleRow}`);
+        console.log(`run(): hasNextPage:  ${hasNextPage}`);
+        console.log(`run(): Pagination cursor: ${pagination}`);
+        console.log(`run(): addTitleRow: ${addTitleRow}`);
 
       });
     } while (hasNextPage);
@@ -155,7 +155,7 @@ const org_Name = core.getInput('org_name');
 const repo_Name = core.getInput('repo_name');
 const csv_path = core.getInput('csv_path');
 
-console.log(`org name ${org_Name}   repo name ${repo_Name}`);
+console.log(`preamble: org name: ${org_Name}   repo name: ${repo_Name}`);
 
 // run the action code
 run(org_Name, repo_Name, csv_path);
