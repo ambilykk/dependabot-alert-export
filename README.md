@@ -5,7 +5,7 @@ This GitHub action helps to export the Dependabot alerts to a CSV file. One can 
 
 
 ## Release
-GitHub Marketplace : << Not Yet deployed to Marketplace >>
+GitHub Marketplace : https://github.com/marketplace/actions/dependabot-alert-export
 
 # How to Use the Action
 
