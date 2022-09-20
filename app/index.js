@@ -59,11 +59,11 @@ const query =
 // ALERT! - I have added the name filed as well as the login field for the owner object
 const fields = [{
   label: 'Repository Owner',
-  value: 'owner.login'
+  value: 'repository.owner.login'
 },
 {
   label: 'Repository Name',
-  value: 'name'
+  value: 'repository.name'
 },
 {
   label: 'Id',
