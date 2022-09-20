@@ -112,7 +112,7 @@ async function getAlerts(org, repo, pagination) {
 
 // Extract vulnerability alerts with a pagination of 50 alerts per page
 async function run(org_Name, repo_Name, csv_path) {
-  
+
   let reportsCSV = "";
   let pagination = null;
   let hasNextPage = false;
@@ -123,6 +123,7 @@ async function run(org_Name, repo_Name, csv_path) {
     await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
       let vulnerabilityNodes = alertResult.repository.vulnerabilityAlerts.nodes;
       const opts = { fields, "header": addTitleRow };
+      console.log(`totalCount: ${alertResult.repository.vulnerabilityAlerts.totalCount}`);
  
       // append to reportsCSV
       reportsCSV = reportsCSV.concat(parse(vulnerabilityNodes, opts));
@@ -147,7 +148,6 @@ async function run(org_Name, repo_Name, csv_path) {
   } catch (error) {
     core.setFailed(error.message);
   }
-  // console.log("reportsCSV:\n" + reportsCSV);
 }
 
 // inputs defined in action metadata file
