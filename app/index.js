@@ -81,7 +81,7 @@ const fields = [{
   value: 'securityVulnerability.package.name'
 },
 {
-  label: 'GHAS Id',
+  label: 'GHSA Id',
   value: 'securityAdvisory.ghsaId'
 },
 {
