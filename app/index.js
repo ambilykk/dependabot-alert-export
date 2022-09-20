@@ -56,16 +56,7 @@ const query =
     }`
 
 // Our CSV output fields
-// ALERT! - I have added the name filed as well as the login field for the owner object
 const fields = [{
-  label: 'Repository Owner',
-  value: 'repository.owner.login'
-},
-{
-  label: 'Repository Name',
-  value: 'repository.name'
-},
-{
   label: 'Id',
   value: 'id'
 },
@@ -140,9 +131,25 @@ async function run(org_Name, repo_Name, csv_path) {
       // invoke the graphql query execution
       await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
         let vulnerabilityNodes = alertResult.repository.vulnerabilityAlerts.nodes;
-        const opts = { fields, "header": addTitleRow };
+
+        // ALERT! - grab the repo name and owner login from the result data
+        const extraFields = [{
+          label: 'Repository',
+          value: 'alertResult.repository.name'
+        },
+        {
+          label: 'Organization',
+          value: 'alertResult.repository.owner.login'
+        }
+        ];
+
+        // ALERT! - Mash all the fields together
+        const allFields = extraFields.concat(fields);
+
+        // ALERT! - create our updated opts
+        const opts = { allFields, "header": addTitleRow };
   
-        // append to reportsCSV
+        // append to the existing file (or create and append if needed)
         require("fs").appendFileSync(csv_path, `${parse(vulnerabilityNodes, opts)}\n`);
 
         // pagination to get next page data
