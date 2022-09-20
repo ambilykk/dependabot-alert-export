@@ -180,6 +180,7 @@ async function run(org_Name, repo_Name, csv_path) {
   } while (hasNextPage);
 
   try {
+    await makeDir(dirname(path));
     require("fs").writeFileSync(csv_path, reportsCSV)
   } catch (error) {
     core.setFailed(error.message);
