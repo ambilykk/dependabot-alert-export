@@ -143,17 +143,6 @@ async function run(org_Name, repo_Name, csv_path) {
       await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
         let vulnerabilityNodes = alertResult.repository.vulnerabilityAlerts.nodes;
 
-        // ALERT! - grab the repo name and owner login from the result data
-        let fields = [{
-          label: 'Repository',
-          value: 'alertResult.repository.name'
-        },
-        {
-          label: 'Organization',
-          value: 'alertResult.repository.owner.login'
-        }
-        ];
-
         // ALERT! - create our updated opts
         const opts = { fields, "header": addTitleRow };
   
