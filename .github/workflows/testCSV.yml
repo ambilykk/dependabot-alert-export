@@ -22,14 +22,6 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v3.4.1
   
-  # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-  # Runs a single command using the runners shell
-      - name: node app/myParser.js
-        run: npm install && node app/myParser.js
-  
       - name: Export Dependabot alerts
         uses: affrae/dependabot-alert-export@main
         with:        

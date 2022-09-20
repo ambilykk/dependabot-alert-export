@@ -113,44 +113,44 @@ async function getAlerts(org, repo, pagination) {
 }
 
 // Write the Vulnerability report to csv file
-async function writeToCSV(path, vulnerabilityNodes) {
-  const rows = [];
+// async function writeToCSV(path, vulnerabilityNodes) {
+//   const rows = [];
 
-  // define the report columns
-  let columns = `Id, State, Created At, Manifest File Name, Vulnerability Version Range, Package Name, GHAS Id, Severity, Summary, Link, Description `;
-  let data = "";
+//   // define the report columns
+//   let columns = `Id, State, Created At, Manifest File Name, Vulnerability Version Range, Package Name, GHAS Id, Severity, Summary, Link, Description `;
+//   let data = "";
 
-  // If file not exists, create the column headings
-  if (!existsSync(path)) {
-    rows.push(CSV.stringify(columns));
-  }
+//   // If file not exists, create the column headings
+//   if (!existsSync(path)) {
+//     rows.push(CSV.stringify(columns));
+//   }
 
-  try {
+//   try {
 
-    // loop through the vulnerability data for form the csv file rows
-    for (let i = 0; i < vulnerabilityNodes.length; i++) {
-      const vul = JSON.parse(JSON.stringify(vulnerabilityNodes[i]));
-      data = vul.id + `, ` + vul.state + `, ` + vul.createdAt + `, ` + vul.vulnerableManifestFilename + `, `;
+//     // loop through the vulnerability data for form the csv file rows
+//     for (let i = 0; i < vulnerabilityNodes.length; i++) {
+//       const vul = JSON.parse(JSON.stringify(vulnerabilityNodes[i]));
+//       data = vul.id + `, ` + vul.state + `, ` + vul.createdAt + `, ` + vul.vulnerableManifestFilename + `, `;
 
-      //security vulnerability data
-      const secVul = JSON.parse(JSON.stringify(vul.securityVulnerability));
-      data += secVul.vulnerableVersionRange + ', ' + JSON.parse(JSON.stringify(secVul.package)).name + `, `;
+//       //security vulnerability data
+//       const secVul = JSON.parse(JSON.stringify(vul.securityVulnerability));
+//       data += secVul.vulnerableVersionRange + ', ' + JSON.parse(JSON.stringify(secVul.package)).name + `, `;
 
-      // Security Advisory data
-      const secAdv = JSON.parse(JSON.stringify(vul.securityAdvisory));
-      data += secAdv.ghsaId + `, ` + secAdv.severity + `, ` + secAdv.summary + `, ` + secAdv.permalink + `, ` + secAdv.description;
+//       // Security Advisory data
+//       const secAdv = JSON.parse(JSON.stringify(vul.securityAdvisory));
+//       data += secAdv.ghsaId + `, ` + secAdv.severity + `, ` + secAdv.summary + `, ` + secAdv.permalink + `, ` + secAdv.description;
 
-      rows.push(CSV.stringify(data));
-    }
+//       rows.push(CSV.stringify(data));
+//     }
 
-    // create the path & file
-    await makeDir(dirname(path));
-    // write to the file
-    appendFileSync(path, rows.join(""));
-  } catch (error) {
-    core.setFailed(error.message);
-  }
-}
+//     // create the path & file
+//     await makeDir(dirname(path));
+//     // write to the file
+//     appendFileSync(path, rows.join(""));
+//   } catch (error) {
+//     core.setFailed(error.message);
+//   }
+// }
 
 // Extract vulnerability alerts with a pagination of 50 alerts per page
 async function run(org_Name, repo_Name, csv_path) {
@@ -163,19 +163,9 @@ async function run(org_Name, repo_Name, csv_path) {
   do {
     // invoke the graphql query execution
     await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
-
-      // iterative parsing of the graphql query result
-      // let alertResultJsonObj = JSON.parse(JSON.stringify(alertResult));
-      // let vulnerabilityData = JSON.parse(JSON.stringify(alertResultJsonObj.repository)).vulnerabilityAlerts;
-      // let count = vulnerabilityData.totalCount;
-
-      // let vulnerabilityNodes = JSON.parse(JSON.stringify(vulnerabilityData.nodes));
-      // let vulnerabilityNodes = JSON.parse(JSON.stringify(alertResult.repository.vulnerabilityAlerts.nodes));
       let vulnerabilityNodes = alertResult.repository.vulnerabilityAlerts.nodes;
  // append to reportsCSV
-      newReportsCSV = json2csvParserReports.parse(vulnerabilityNodes)
-      console.log("newReportsCSV: \n" + newReportsCSV);
-      reportsCSV = reportsCSV.concat(newReportsCSV);
+      reportsCSV = reportsCSV.concat(json2csvParserReports.parse(vulnerabilityNodes));
 
       // pagination to get next page data
       let pageInfo = alertResult.repository.vulnerabilityAlerts.pageInfo;
@@ -188,8 +178,13 @@ async function run(org_Name, repo_Name, csv_path) {
 
     });
   } while (hasNextPage);
-//  writeToCSV(csv_path, vulnerabilityNodes);
-console.log("reportsCSV:\n" + reportsCSV);
+
+  try {
+    require("fs").writeFileSync(csv_path, reportsCSV)
+  } catch (error) {
+    core.setFailed(error.message);
+  }
+  // console.log("reportsCSV:\n" + reportsCSV);
 }
 
 // inputs defined in action metadata file
