@@ -54,7 +54,7 @@ Following fields are included in the Vulnerability Report
 - Manifest File Name
 - Vulnerability Version Range
 - Package Name
-- GHAS Id
+- GHSA Id
 - Severity
 - Summary
 - Link
