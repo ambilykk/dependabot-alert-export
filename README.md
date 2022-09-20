@@ -48,8 +48,8 @@ steps:
 ## Exported Fields
 Following fields are included in the Vulnerability Report
 - Vulnerability Id
-- Dependency Scope (DEVELOPMENT or RUNTIME)
-- State
+- Dependency Scope (`DEVELOPMENT` or `RUNTIME`)
+- State (`DISMISSED`, `FIXED` or `OPEN`)
 - Created At
 - Manifest File Name
 - Vulnerability Version Range
