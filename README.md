@@ -54,7 +54,7 @@ Following fields are included in the Vulnerability Report
 - Manifest File Name
 - Vulnerability Version Range
 - Package Name
-- GHSA Id
+- GHSA Id (The ID of the vulnerability in the [GitHub Security Advisory Database](https://github.com/advisories))
 - Severity
 - Summary
 - Link
