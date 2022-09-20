@@ -12,10 +12,14 @@ const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
 const octokit = github.getOctokit(GITHUB_TOKEN);
 
 // Graphql query for vulnerability data
+// ALERT! - see how we have now added the owner object? Both Users and Orgnizations share the same "login" field to denote the organization name
 const query =
   `query ($org_name: String! $repo_name: String! $pagination: String){
       repository(owner: $org_name name: $repo_name) {
         name
+        owner {
+          login
+        }
         vulnerabilityAlerts(first: 50 after: $pagination) {     
           pageInfo {
               hasNextPage
@@ -52,7 +56,16 @@ const query =
     }`
 
 // Our CSV output fields
+// ALERT! - I have added the name filed as well as the login field for the owner object
 const fields = [{
+  label: 'Repository Owner',
+  value: 'owner.login'
+},
+{
+  label: 'Repository Name',
+  value: 'name'
+},
+{
   label: 'Id',
   value: 'id'
 },
