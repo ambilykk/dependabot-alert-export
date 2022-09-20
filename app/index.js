@@ -130,7 +130,7 @@ async function run(org_Name, repo_Name, csv_path) {
         const opts = { fields, "header": addTitleRow };
   
         // append to reportsCSV
-        require("fs").appendFileSync(csv_path, `${reportsCSV.concat(parse(vulnerabilityNodes, opts))}\n`);
+        require("fs").appendFileSync(csv_path, `${parse(vulnerabilityNodes, opts)}\n`);
 
         // pagination to get next page data
         let pageInfo = alertResult.repository.vulnerabilityAlerts.pageInfo;
