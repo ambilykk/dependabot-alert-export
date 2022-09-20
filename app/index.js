@@ -29,6 +29,7 @@ const query =
             dismissReason
             dismissComment
             state
+            dependencyScope
             securityAdvisory {
                 ghsaId
                 description
@@ -58,6 +59,10 @@ const fields = [{
 {
   label: 'State',
   value: 'state'
+},
+{
+  label: 'Scope',
+  value: 'dependencyScope'
 },
 {
   label: 'Created At',
