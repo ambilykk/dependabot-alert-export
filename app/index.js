@@ -139,7 +139,7 @@ async function run(org_Name, repo_Name, csv_path) {
       await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
 
         // ALERT! - create our updated opts
-        const opts = { allFields, "header": addTitleRow };
+        const opts = { fields, "header": addTitleRow };
   
         // append to the existing file (or create and append if needed)
         require("fs").appendFileSync(csv_path, `${parse(alertResult, opts)}\n`);
