@@ -59,6 +59,11 @@ Following fields are included in the Vulnerability Report
 - Summary
 - Link
 - Description
+- Dismissed At (for Dismissed alerts)
+- Dismiss Reason
+- Dismiss Comment
+- Fixed At (for Fixed alerts)
+- Fix Reason
 
 ## Report
 Vulnerability report in CSV format will be available as part of the build artifacts for download
