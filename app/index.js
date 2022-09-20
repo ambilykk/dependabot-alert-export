@@ -128,7 +128,6 @@ async function run(org_Name, repo_Name, csv_path) {
       await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
         let vulnerabilityNodes = alertResult.repository.vulnerabilityAlerts.nodes;
         const opts = { fields, "header": addTitleRow };
-        console.log(`totalCount: ${alertResult.repository.vulnerabilityAlerts.totalCount}`);
   
         // append to reportsCSV
         require("fs").appendFileSync(csv_path, `${reportsCSV.concat(parse(vulnerabilityNodes, opts))}\n`);
