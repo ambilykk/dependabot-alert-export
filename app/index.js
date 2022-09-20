@@ -100,9 +100,7 @@ const fields = [{
 // graphql query execution
 async function getAlerts(org, repo, pagination) {
   try {
-    console.log(pagination ? `${pagination}` : null);
-    console.log(`pagination ${pagination}`);
-    console.log(pagination);
+    console.log(`getAlerts(): ${pagination ? pagination: null}` );
 
     return await octokit.graphql(query, { org_name: `${org}`, repo_name: `${repo}`, pagination: (pagination ? `${pagination}` : null) });
   } catch (error) {
