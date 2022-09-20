@@ -121,33 +121,31 @@ async function run(org_Name, repo_Name, csv_path) {
   let hasNextPage = false;
   let addTitleRow = true;
 
-  do {
-    // invoke the graphql query execution
-    await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
-      let vulnerabilityNodes = alertResult.repository.vulnerabilityAlerts.nodes;
-      const opts = { fields, "header": addTitleRow };
-      console.log(`totalCount: ${alertResult.repository.vulnerabilityAlerts.totalCount}`);
- 
-      // append to reportsCSV
-      reportsCSV = `${reportsCSV.concat(parse(vulnerabilityNodes, opts))}\n`;
-
-      // pagination to get next page data
-      let pageInfo = alertResult.repository.vulnerabilityAlerts.pageInfo;
-      hasNextPage = pageInfo.hasNextPage;
-      if (hasNextPage) {
-        pagination = pageInfo.endCursor;
-        addTitleRow = false;
-      }
-      console.log(`hasNextPage:  ${hasNextPage}`);
-      console.log(`Pagination cursor: ${pagination}`);
-      console.log(`addTitleRow: ${addTitleRow}`);
-
-    });
-  } while (hasNextPage);
-
   try {
     await makeDir(dirname(csv_path));
-    require("fs").writeFileSync(csv_path, reportsCSV)
+    do {
+      // invoke the graphql query execution
+      await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
+        let vulnerabilityNodes = alertResult.repository.vulnerabilityAlerts.nodes;
+        const opts = { fields, "header": addTitleRow };
+        console.log(`totalCount: ${alertResult.repository.vulnerabilityAlerts.totalCount}`);
+  
+        // append to reportsCSV
+        require("fs").appendFileSync(csv_path, `${reportsCSV.concat(parse(vulnerabilityNodes, opts))}\n`);
+
+        // pagination to get next page data
+        let pageInfo = alertResult.repository.vulnerabilityAlerts.pageInfo;
+        hasNextPage = pageInfo.hasNextPage;
+        if (hasNextPage) {
+          pagination = pageInfo.endCursor;
+          addTitleRow = false;
+        }
+        console.log(`hasNextPage:  ${hasNextPage}`);
+        console.log(`Pagination cursor: ${pagination}`);
+        console.log(`addTitleRow: ${addTitleRow}`);
+
+      });
+    } while (hasNextPage);
   } catch (error) {
     core.setFailed(error.message);
   }
