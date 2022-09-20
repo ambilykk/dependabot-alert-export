@@ -17,7 +17,6 @@ const repo_Name = core.getInput('repo_name');
 const csv_path = core.getInput('csv_path');
 
 // Graphql query for vulnerability data
-// ALERT! - see how we have now added the owner object? Both Users and Orgnizations share the same "login" field to denote the organization name
 const query =
   `query ($org_name: String! $repo_name: String! $pagination: String){
       repository(owner: $org_name name: $repo_name) {
@@ -31,11 +30,19 @@ const query =
           nodes {
             id
             createdAt
+            state
             dismissedAt
             dismissReason
             dismissComment
-            state
+            fixedAt
+            fixReason
             dependencyScope
+            repository{
+              name
+              owner{
+                login
+              }
+            }
             securityAdvisory {
                 ghsaId
                 description
@@ -51,7 +58,6 @@ const query =
             }
             vulnerableManifestFilename
             vulnerableManifestPath
-            vulnerableRequirements
           }
         }
       }
@@ -60,12 +66,12 @@ const query =
   // Our CSV output fields
   const fields = [{
     label: 'Owner',
-    value: 'DUMMY OWNER',
+    value: 'repository.owner.login',
     default: `${org_Name}`
   },
   {
     label: 'Repository Name',
-    value: 'DUMMY NAME',
+    value: 'repository.name',
     default: `${repo_Name}`
   },
   {
@@ -115,6 +121,26 @@ const query =
   {
     label: 'Description',
     value: 'securityAdvisory.description'
+  },
+  {
+    label: 'Dismissed At',
+    value: 'dismissedAt'
+  },
+  {
+    label: 'Dismiss Reason',
+    value: 'dismissReason'
+  },
+  {
+    label: 'Dismiss Comment',
+    value: 'dismissComment'
+  },
+  {
+    label: 'Fixed At',
+    value: 'fixedAt'
+  },
+  {
+    label: 'Fix Reason',
+    value: 'fixReason'
   }
   ];
 
