@@ -48,12 +48,13 @@ steps:
 ## Exported Fields
 Following fields are included in the Vulnerability Report
 - Vulnerability Id
-- State
+- Dependency Scope (`DEVELOPMENT` or `RUNTIME`)
+- State (`DISMISSED`, `FIXED` or `OPEN`)
 - Created At
 - Manifest File Name
 - Vulnerability Version Range
 - Package Name
-- GHAS Id
+- GHSA Id (The ID of the vulnerability in the [GitHub Security Advisory Database](https://github.com/advisories))
 - Severity
 - Summary
 - Link

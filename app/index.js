@@ -1,18 +1,23 @@
 // libs for github & graphql
 const core = require('@actions/core');
 const github = require('@actions/github');
+const { parse } = require('json2csv');
 
 // libs for csv file creation
 const { dirname } = require("path");
-const { existsSync, appendFileSync } = require("fs");
-const CSV = require("csv-string");
 const makeDir = require("make-dir");
 
 // get the octokit handle 
 const GITHUB_TOKEN = core.getInput('GITHUB_TOKEN');
 const octokit = github.getOctokit(GITHUB_TOKEN);
 
+// inputs defined in action metadata file
+const org_Name = core.getInput('org_name');
+const repo_Name = core.getInput('repo_name');
+const csv_path = core.getInput('csv_path');
+
 // Graphql query for vulnerability data
+// ALERT! - see how we have now added the owner object? Both Users and Orgnizations share the same "login" field to denote the organization name
 const query =
   `query ($org_name: String! $repo_name: String! $pagination: String){
       repository(owner: $org_name name: $repo_name) {
@@ -30,6 +35,7 @@ const query =
             dismissReason
             dismissComment
             state
+            dependencyScope
             securityAdvisory {
                 ghsaId
                 description
@@ -51,12 +57,71 @@ const query =
       }
     }`
 
+  // Our CSV output fields
+  const fields = [{
+    label: 'Owner',
+    value: 'DUMMY OWNER',
+    default: `${org_Name}`
+  },
+  {
+    label: 'Repository Name',
+    value: 'DUMMY NAME',
+    default: `${repo_Name}`
+  },
+  {
+    label: 'ID',
+    value: 'id'
+  },
+  {
+    label: 'State',
+    value: 'state'
+  },
+  {
+    label: 'Scope',
+    value: 'dependencyScope'
+  },
+  {
+    label: 'Created At',
+    value: 'createdAt'
+  },
+  {
+    label: 'Manifest File Name',
+    value: 'vulnerableManifestFilename'
+  },
+  {
+    label: 'Vulnerability Version Range',
+    value: 'securityVulnerability.vulnerableVersionRange'
+  },
+  {
+    label: 'Package Name',
+    value: 'securityVulnerability.package.name'
+  },
+  {
+    label: 'GHSA Id',
+    value: 'securityAdvisory.ghsaId'
+  },
+  {
+    label: 'Severity',
+    value: 'securityAdvisory.severity'
+  },
+  {
+    label: 'Summary',
+    value: 'securityAdvisory.summary'
+  },
+  {
+    label: 'Link',
+    value: 'securityAdvisory.permalink'
+  },
+  {
+    label: 'Description',
+    value: 'securityAdvisory.description'
+  }
+  ];
+
 // graphql query execution
 async function getAlerts(org, repo, pagination) {
   try {
-    console.log(pagination ? `${pagination}` : null);
-    console.log(`pagination ${pagination}`);
-    console.log(pagination);
+    console.log(`getAlerts(): pagination: ${pagination ? pagination: null}` );
 
     return await octokit.graphql(query, { org_name: `${org}`, repo_name: `${repo}`, pagination: (pagination ? `${pagination}` : null) });
   } catch (error) {
@@ -64,82 +129,45 @@ async function getAlerts(org, repo, pagination) {
   }
 }
 
-// Write the Vulnerability report to csv file
-async function writeToCSV(path, vulnerabilityNodes) {
-  const rows = [];
+// Extract vulnerability alerts with a pagination of 50 alerts per page
+async function run(org_Name, repo_Name, csv_path) {
 
-  // define the report columns
-  let columns = `Id, State, Created At, Manifest File Name, Vulnerability Version Range, Package Name, GHAS Id, Severity, Summary, Link, Description `;
-  let data = "";
-
-  // If file not exists, create the column headings
-  if (!existsSync(path)) {
-    rows.push(CSV.stringify(columns));
-  }
+  let pagination = null;
+  let hasNextPage = false;
+  let addTitleRow = true;
 
   try {
+    await makeDir(dirname(csv_path));
+    do {
+      // invoke the graphql query execution
+      await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
+        let vulnerabilityNodes = alertResult.repository.vulnerabilityAlerts.nodes;
 
-    // loop through the vulnerability data for form the csv file rows
-    for (let i = 0; i < vulnerabilityNodes.length; i++) {
-      const vul = JSON.parse(JSON.stringify(vulnerabilityNodes[i]));
-      data = vul.id + `, ` + vul.state + `, ` + vul.createdAt + `, ` + vul.vulnerableManifestFilename + `, `;
+        // ALERT! - create our updated opts
+        const opts = { fields, "header": addTitleRow };
+  
+        // append to the existing file (or create and append if needed)
+        require("fs").appendFileSync(csv_path, `${parse(vulnerabilityNodes, opts)}\n`);
 
-      //security vulnerability data
-      const secVul = JSON.parse(JSON.stringify(vul.securityVulnerability));
-      data += secVul.vulnerableVersionRange + ', ' + JSON.parse(JSON.stringify(secVul.package)).name + `, `;
+        // pagination to get next page data
+        let pageInfo = alertResult.repository.vulnerabilityAlerts.pageInfo;
+        hasNextPage = pageInfo.hasNextPage;
+        if (hasNextPage) {
+          pagination = pageInfo.endCursor;
+          addTitleRow = false;
+        }
+        console.log(`run(): hasNextPage:  ${hasNextPage}`);
+        console.log(`run(): Pagination cursor: ${pagination}`);
+        console.log(`run(): addTitleRow: ${addTitleRow}`);
 
-      // Security Advisory data
-      const secAdv = JSON.parse(JSON.stringify(vul.securityAdvisory));
-      data += secAdv.ghsaId + `, ` + secAdv.severity + `, ` + secAdv.summary + `, ` + secAdv.permalink + `, ` + secAdv.description;
-
-      rows.push(CSV.stringify(data));
-    }
-
-    // create the path & file
-    await makeDir(dirname(path));
-    // write to the file
-    appendFileSync(path, rows.join(""));
+      });
+    } while (hasNextPage);
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 
-// Extract vulnerability alerts with a pagination of 50 alerts per page
-async function run(org_Name, repo_Name, csv_path) {
-  let pagination = null;
-  let hasPage = false;
-  do {
-    // invoke the graphql query execution
-    await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
-
-      // iterative parsing of the graphql query result
-      let alertResultJsonObj = JSON.parse(JSON.stringify(alertResult));
-      let vulnerabilityData = JSON.parse(JSON.stringify(alertResultJsonObj.repository)).vulnerabilityAlerts;
-      let count = vulnerabilityData.totalCount;
-
-      let vulnerabilityNodes = JSON.parse(JSON.stringify(vulnerabilityData.nodes));
-      // write to the csv file
-      writeToCSV(csv_path, vulnerabilityNodes);
-
-      // pagination to get next page data
-      let pageInfo = JSON.parse(JSON.stringify(vulnerabilityData.pageInfo));
-      hasPage = pageInfo.hasNextPage;
-      if (hasPage) {
-        pagination = pageInfo.endCursor
-      }
-      console.log(`hasPage  ${hasPage}`);
-      console.log(`Pagination cursor ${pagination}`);
-
-    });
-  } while (hasPage);
-}
-
-// inputs defined in action metadata file
-const org_Name = core.getInput('org_name');
-const repo_Name = core.getInput('repo_name');
-const csv_path = core.getInput('csv_path');
-
-console.log(`org name ${org_Name}   repo name ${repo_Name}`);
+console.log(`preamble: org name: ${org_Name}   repo name: ${repo_Name}`);
 
 // run the action code
 run(org_Name, repo_Name, csv_path);

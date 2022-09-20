@@ -20,6 +20,7 @@
     "@actions/core": "^1.9.1",
     "@actions/github": "^5.0.3",
     "csv-string": "^4.1.0",
-    "make-dir": "^3.1.0"
+    "make-dir": "^3.1.0",
+    "json2csv": "^5.0.7"
   }
 }
