@@ -48,6 +48,7 @@ steps:
 ## Exported Fields
 Following fields are included in the Vulnerability Report
 - Vulnerability Id
+- Dependency Scope (DEVELOPMENT or RUNTIME)
 - State
 - Created At
 - Manifest File Name
