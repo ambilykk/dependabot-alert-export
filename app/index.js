@@ -120,7 +120,6 @@ async function getAlerts(org, repo, pagination) {
 // Extract vulnerability alerts with a pagination of 50 alerts per page
 async function run(org_Name, repo_Name, csv_path) {
 
-  let reportsCSV = "";
   let pagination = null;
   let hasNextPage = false;
   let addTitleRow = true;
@@ -133,7 +132,7 @@ async function run(org_Name, repo_Name, csv_path) {
         let vulnerabilityNodes = alertResult.repository.vulnerabilityAlerts.nodes;
 
         // ALERT! - grab the repo name and owner login from the result data
-        const extraFields = [{
+        let extraFields = [{
           label: 'Repository',
           value: 'alertResult.repository.name'
         },
