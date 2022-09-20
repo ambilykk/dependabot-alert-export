@@ -129,7 +129,7 @@ async function run(org_Name, repo_Name, csv_path) {
       console.log(`totalCount: ${alertResult.repository.vulnerabilityAlerts.totalCount}`);
  
       // append to reportsCSV
-      reportsCSV = reportsCSV.concat(parse(vulnerabilityNodes, opts));
+      reportsCSV = `${reportsCSV.concat(parse(vulnerabilityNodes, opts))}\n`;
 
       // pagination to get next page data
       let pageInfo = alertResult.repository.vulnerabilityAlerts.pageInfo;
