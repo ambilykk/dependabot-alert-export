@@ -154,11 +154,8 @@ async function run(org_Name, repo_Name, csv_path) {
         }
         ];
 
-        // ALERT! - Mash all the fields together
-        const allFields = extraFields.concat(fields);
-
         // ALERT! - create our updated opts
-        const opts = { allFields, "header": addTitleRow };
+        const opts = { fields, "header": addTitleRow };
   
         // append to the existing file (or create and append if needed)
         require("fs").appendFileSync(csv_path, `${parse(vulnerabilityNodes, opts)}\n`);
