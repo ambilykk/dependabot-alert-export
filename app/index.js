@@ -169,8 +169,11 @@ async function run(org_Name, repo_Name, csv_path) {
       // invoke the graphql query execution
       await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
         let vulnerabilityNodes = alertResult.repository.vulnerabilityAlerts.nodes;
-        alertCount = alertResult.repository.vulnerabilityAlerts.totalCount;
-        console.log ('Alert Count ' + alertCount);
+        
+        if(addTitleRow){
+          alertCount = alertResult.repository.vulnerabilityAlerts.totalCount;
+          console.log ('Alert Count ' + alertCount);
+        }
         
         // ALERT! - create our updated opts
         const opts = { fields, "header": addTitleRow };
