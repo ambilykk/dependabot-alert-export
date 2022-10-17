@@ -161,6 +161,7 @@ async function run(org_Name, repo_Name, csv_path) {
   let pagination = null;
   let hasNextPage = false;
   let addTitleRow = true;
+  let alertCount =0 ;
 
   try {
     await makeDir(dirname(csv_path));
@@ -168,7 +169,8 @@ async function run(org_Name, repo_Name, csv_path) {
       // invoke the graphql query execution
       await getAlerts(org_Name, repo_Name, pagination).then(alertResult => {
         let vulnerabilityNodes = alertResult.repository.vulnerabilityAlerts.nodes;
-
+        alertCount = alertCount+vulnerabilityNodes.length;
+        
         // ALERT! - create our updated opts
         const opts = { fields, "header": addTitleRow };
   
@@ -187,6 +189,9 @@ async function run(org_Name, repo_Name, csv_path) {
         console.log(`run(): addTitleRow: ${addTitleRow}`);
 
       });
+      
+       core.setOutput('alerts_count', alertCount)
+
     } while (hasNextPage);
   } catch (error) {
     core.setFailed(error.message);
