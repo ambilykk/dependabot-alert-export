@@ -22,7 +22,7 @@ Following is the sample code for integrating this action with your workflow
 ```
 steps:               
       - name: Export Dependabot alerts
-        uses: techrill88/dependabot-alert-export@v1.0
+        uses: ambilykk/dependabot-alert-export@v1.0
         with:        
           GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
           org_name: 'ORG_NAME'
