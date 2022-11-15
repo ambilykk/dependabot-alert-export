@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/techrill88/dependabot-alert-export.git"
+    "url": "git+https://github.com/ambilykk/dependabot-alert-export.git"
   },
   "author": "ambilykk",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/techrill88/dependabot-alert-export/issues"
+    "url": "https://github.com/ambilykk/dependabot-alert-export/issues"
   },
-  "homepage": "https://github.com/techrill88/dependabot-alert-export#readme",
+  "homepage": "https://github.com/ambilykk/dependabot-alert-export#readme",
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@actions/github": "^5.0.3",
