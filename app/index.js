@@ -35,7 +35,6 @@ const query =
             dismissReason
             dismissComment
             fixedAt
-            fixReason
             dependencyScope
             repository{
               name
@@ -137,10 +136,6 @@ const query =
   {
     label: 'Fixed At',
     value: 'fixedAt'
-  },
-  {
-    label: 'Fix Reason',
-    value: 'fixReason'
   }
   ];
 
